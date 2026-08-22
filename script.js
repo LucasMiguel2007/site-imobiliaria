@@ -504,7 +504,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "2",
 
             price:
-                "R$ 850 mil"
+                "R$ 2,5 mi"
 
         },
 
@@ -532,7 +532,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 "1",
 
             price:
-                "R$ 420 mil"
+                "R$ 1,5 mi"
 
         },
 
