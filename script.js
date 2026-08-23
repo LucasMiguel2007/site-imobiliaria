@@ -488,9 +488,6 @@ document.addEventListener("DOMContentLoaded", () => {
             title:
                 "Casa Moderna Premium",
 
-            type:
-                "CASA • VENDA",
-
             location:
                 "Região central",
 
@@ -515,10 +512,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
             title:
                 "Apartamento Urban",
-
-            type:
-                "APARTAMENTO • VENDA",
-
             location:
                 "Bairro planejado",
 
@@ -543,10 +536,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
             title:
                 "Casa Contemporânea",
-
-            type:
-                "CASA • VENDA",
-
+                
             location:
                 "Região residencial",
 
@@ -1001,13 +991,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
                 z-index: 1;
 
-                background:
-                    radial-gradient(
-                        circle,
-                        rgba(45,130,207,.08),
-                        transparent 70%
-                    );
-
                 transform:
                     translate(-50%, -50%);
 
@@ -1052,9 +1035,6 @@ document.addEventListener("DOMContentLoaded", () => {
             img.addEventListener(
                 "error",
                 () => {
-
-                    img.style.background =
-                        "linear-gradient(135deg,#091929,#1d5b96)";
 
                 }
             );
