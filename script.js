@@ -361,7 +361,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "casa-moderna":{
       image:"casa1.0.png",
       title:"Casa Moderna Premium",
-      type:"Casa Premium",
       location:"Região central",
       bedrooms:"3",
       bathrooms:"3",
@@ -371,8 +370,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     "apartamento-urbano":{
       image:"casa2.png",
-      title:"Apartamento Urban",
-      type:"Apartamento",
+      title:"Casa Urbana",
       location:"Bairro planejado",
       bedrooms:"2",
       bathrooms:"2",
@@ -383,7 +381,6 @@ document.addEventListener("DOMContentLoaded", () => {
     "casa-contemporanea":{
       image:"casa3.png",
       title:"Casa Contemporânea",
-      type:"Casa Contemporânea",
       location:"Região residencial",
       bedrooms:"4",
       bathrooms:"4",
