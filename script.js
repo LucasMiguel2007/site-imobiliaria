@@ -1,1044 +1,658 @@
 /* =========================================================
-   CONFIGURAÇÕES
+   ÓRBITA - JAVASCRIPT OTIMIZADO
+   Refatorado mantendo os mesmos IDs e classes do projeto.
+
+   Módulos:
+   1. Preloader
+   2. Header + Parallax
+   3. Menu Mobile
+   4. Navegação ativa
+   5. Reveal
+   6. Contadores
+   7. Filtros
+   8. Favoritos
+   9. Modal
+   10. Efeitos Desktop
 ========================================================= */
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    /* =====================================================
-       ELEMENTOS
-    ====================================================== */
+  /* =======================================================
+     CONFIGURAÇÃO
+  ======================================================= */
 
-    const preloader =
-        document.getElementById("preloader");
+  const $ = selector => document.querySelector(selector);
+  const $$ = selector => [...document.querySelectorAll(selector)];
 
-    const header =
-        document.getElementById("header");
+  const prefersReduced = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const desktop = matchMedia("(pointer:fine)").matches;
 
-    const navbar =
-        document.getElementById("navbar");
+  /* Elementos principais */
 
-    const menuToggle =
-        document.getElementById("menuToggle");
+  const preloader = $("#preloader");
+  const header = $("#header");
+  const navbar = $("#navbar");
+  const menuToggle = $("#menuToggle");
 
-    const navLinks =
-        document.querySelectorAll(".nav-link");
+  const navLinks = $$(".nav-link");
+  const sections = $$("main section");
+  const revealElements = $$(".reveal");
+  const counters = $$("[data-counter]");
+  const propertyCards = $$(".property-card");
 
-    const sections =
-        document.querySelectorAll("main section");
+  const modal = $("#propertyModal");
+  const modalClose = $("#modalClose");
+  const modalBackdrop = $(".modal-backdrop");
 
-    const revealElements =
-        document.querySelectorAll(".reveal");
+  const heroImage = $(".hero-img");
 
-    const counters =
-        document.querySelectorAll("[data-counter]");
 
-    const filterButtons =
-        document.querySelectorAll(".filter-btn");
+  /* =======================================================
+     1. PRELOADER
+  ======================================================= */
 
-    const propertyCards =
-        document.querySelectorAll(".property-card");
+  window.addEventListener("load", () => {
 
-    const favoriteButtons =
-        document.querySelectorAll(".favorite-btn");
+    if (!preloader) return;
 
-    const modal =
-        document.getElementById("propertyModal");
+    setTimeout(() => {
 
-    const modalClose =
-        document.getElementById("modalClose");
+      preloader.classList.add("hidden");
+      document.body.classList.add("loaded");
 
-    const modalBackdrop =
-        document.querySelector(".modal-backdrop");
+    }, 350);
 
-    const modalImage =
-        document.getElementById("modalImage");
+  });
 
-    const modalTitle =
-        document.getElementById("modalTitle");
 
-    const modalType =
-        document.getElementById("modalType");
+  /* =======================================================
+     2. HEADER + PARALLAX
+     Um único listener usando requestAnimationFrame.
+  ======================================================= */
 
-    const modalLocation =
-        document.getElementById("modalLocation");
+  let ticking = false;
 
-    const modalBedrooms =
-        document.getElementById("modalBedrooms");
+  function updateScrollEffects() {
 
-    const modalBathrooms =
-        document.getElementById("modalBathrooms");
+    const scroll = window.scrollY;
 
-    const modalParking =
-        document.getElementById("modalParking");
-
-    const modalPrice =
-        document.getElementById("modalPrice");
-
-
-    /* =====================================================
-       PRELOADER
-    ====================================================== */
-
-    window.addEventListener("load", () => {
-
-        setTimeout(() => {
-
-            preloader.classList.add("hidden");
-
-            document.body.classList.add("loaded");
-
-        }, 500);
-
-    });
-
-
-    /* =====================================================
-       HEADER DINÂMICO
-    ====================================================== */
-
-    const updateHeader = () => {
-
-        if (window.scrollY > 40) {
-
-            header.classList.add("scrolled");
-
-        } else {
-
-            header.classList.remove("scrolled");
-
-        }
-
-    };
-
-
-    window.addEventListener(
-        "scroll",
-        updateHeader,
-        { passive: true }
-    );
-
-
-    updateHeader();
-
-
-    /* =====================================================
-       MENU MOBILE
-    ====================================================== */
-
-    menuToggle.addEventListener("click", () => {
-
-        const isOpen =
-            menuToggle.classList.toggle("active");
-
-        navbar.classList.toggle(
-            "open",
-            isOpen
-        );
-
-        menuToggle.setAttribute(
-            "aria-expanded",
-            isOpen
-        );
-
-    });
-
-
-    /* Fechar menu ao clicar em um link */
-
-    navLinks.forEach(link => {
-
-        link.addEventListener("click", () => {
-
-            menuToggle.classList.remove("active");
-
-            navbar.classList.remove("open");
-
-            menuToggle.setAttribute(
-                "aria-expanded",
-                "false"
-            );
-
-        });
-
-    });
-
-
-    /* =====================================================
-       NAVEGAÇÃO ATIVA PELO SCROLL
-    ====================================================== */
-
-    const sectionObserver =
-        new IntersectionObserver(
-            entries => {
-
-                entries.forEach(entry => {
-
-                    if (!entry.isIntersecting)
-                        return;
-
-                    const currentId =
-                        entry.target.getAttribute("id");
-
-                    navLinks.forEach(link => {
-
-                        const href =
-                            link.getAttribute("href");
-
-                        link.classList.toggle(
-                            "active",
-                            href === `#${currentId}`
-                        );
-
-                    });
-
-                });
-
-            },
-            {
-                rootMargin:
-                    "-30% 0px -60% 0px"
-            }
-        );
-
-
-    sections.forEach(section => {
-
-        sectionObserver.observe(section);
-
-    });
-
-
-    /* =====================================================
-       REVEAL ON SCROLL
-    ====================================================== */
-
-    const revealObserver =
-        new IntersectionObserver(
-            entries => {
-
-                entries.forEach(entry => {
-
-                    if (
-                        !entry.isIntersecting
-                    ) {
-                        return;
-                    }
-
-                    entry.target.classList.add(
-                        "visible"
-                    );
-
-                    revealObserver.unobserve(
-                        entry.target
-                    );
-
-                });
-
-            },
-            {
-                threshold: .12
-            }
-        );
-
-
-    revealElements.forEach(element => {
-
-        revealObserver.observe(element);
-
-    });
-
-
-    /* =====================================================
-       CONTADORES ANIMADOS
-    ====================================================== */
-
-    const animateCounter = element => {
-
-        const target =
-            Number(
-                element.dataset.counter
-            );
-
-        const duration = 1600;
-
-        const startTime =
-            performance.now();
-
-
-        const update = currentTime => {
-
-            const progress =
-                Math.min(
-                    (currentTime - startTime) /
-                    duration,
-                    1
-                );
-
-
-            const easedProgress =
-                1 -
-                Math.pow(
-                    1 - progress,
-                    3
-                );
-
-
-            const current =
-                Math.floor(
-                    easedProgress * target
-                );
-
-
-            element.textContent =
-                current.toLocaleString("pt-BR");
-
-
-            if (progress < 1) {
-
-                requestAnimationFrame(update);
-
-            } else {
-
-                element.textContent =
-                    target.toLocaleString("pt-BR") +
-                    "+";
-
-            }
-
-        };
-
-
-        requestAnimationFrame(update);
-
-    };
-
-
-    const counterObserver =
-        new IntersectionObserver(
-            entries => {
-
-                entries.forEach(entry => {
-
-                    if (
-                        entry.isIntersecting
-                    ) {
-
-                        animateCounter(
-                            entry.target
-                        );
-
-                        counterObserver.unobserve(
-                            entry.target
-                        );
-
-                    }
-
-                });
-
-            },
-            {
-                threshold: .7
-            }
-        );
-
-
-    counters.forEach(counter => {
-
-        counterObserver.observe(counter);
-
-    });
-
-
-    /* =====================================================
-       FILTRO DE IMÓVEIS
-    ====================================================== */
-
-    filterButtons.forEach(button => {
-
-        button.addEventListener(
-            "click",
-            () => {
-
-                filterButtons.forEach(btn => {
-
-                    btn.classList.remove(
-                        "active"
-                    );
-
-                });
-
-
-                button.classList.add(
-                    "active"
-                );
-
-
-                const selectedFilter =
-                    button.dataset.filter;
-
-
-                propertyCards.forEach(card => {
-
-                    const categories =
-                        card.dataset.category
-                            .split(" ");
-
-
-                    const shouldShow =
-                        selectedFilter === "all" ||
-                        categories.includes(
-                            selectedFilter
-                        );
-
-
-                    if (shouldShow) {
-
-                        card.classList.remove(
-                            "hidden"
-                        );
-
-                        card.style.opacity = "0";
-
-                        requestAnimationFrame(() => {
-
-                            card.style.opacity =
-                                "1";
-
-                        });
-
-                    } else {
-
-                        card.classList.add(
-                            "hidden"
-                        );
-
-                    }
-
-                });
-
-            }
-        );
-
-    });
-
-
-    /* =====================================================
-       FAVORITOS
-    ====================================================== */
-
-    favoriteButtons.forEach(button => {
-
-        button.addEventListener(
-            "click",
-            event => {
-
-                event.stopPropagation();
-
-                button.classList.toggle(
-                    "active"
-                );
-
-
-                const icon =
-                    button.querySelector("i");
-
-
-                if (
-                    button.classList.contains(
-                        "active"
-                    )
-                ) {
-
-                    icon.classList.remove(
-                        "fa-regular"
-                    );
-
-                    icon.classList.add(
-                        "fa-solid"
-                    );
-
-                } else {
-
-                    icon.classList.remove(
-                        "fa-solid"
-                    );
-
-                    icon.classList.add(
-                        "fa-regular"
-                    );
-
-                }
-
-            }
-        );
-
-    });
-
-
-    /* =====================================================
-       MODAL DE IMÓVEIS
-    ====================================================== */
-
-    const propertyData = {
-
-        "casa-moderna": {
-
-            image: "casa1.0.png",
-
-            title:
-                "Casa Moderna Premium",
-
-            location:
-                "Região central",
-
-            bedrooms:
-                "3",
-
-            bathrooms:
-                "3",
-
-            parking:
-                "2",
-
-            price:
-                "R$ 2,5 mi"
-
-        },
-
-
-        "apartamento-urbano": {
-
-            image: "casa2.png",
-
-            title:
-                "Apartamento Urban",
-            location:
-                "Bairro planejado",
-
-            bedrooms:
-                "2",
-
-            bathrooms:
-                "2",
-
-            parking:
-                "1",
-
-            price:
-                "R$ 1,5 mi"
-
-        },
-
-
-        "casa-contemporanea": {
-
-            image: "casa3.png",
-
-            title:
-                "Casa Contemporânea",
-                
-            location:
-                "Região residencial",
-
-            bedrooms:
-                "4",
-
-            bathrooms:
-                "4",
-
-            parking:
-                "3",
-
-            price:
-                "R$ 1,2 milhão"
-
-        }
-
-    };
-
-
-    const openPropertyModal =
-        propertyId => {
-
-            const property =
-                propertyData[propertyId];
-
-
-            if (!property)
-                return;
-
-
-            modalImage.src =
-                property.image;
-
-            modalImage.alt =
-                property.title;
-
-
-            modalTitle.textContent =
-                property.title;
-
-            modalType.textContent =
-                property.type;
-
-            modalLocation.textContent =
-                property.location;
-
-            modalBedrooms.textContent =
-                property.bedrooms;
-
-            modalBathrooms.textContent =
-                property.bathrooms;
-
-            modalParking.textContent =
-                property.parking;
-
-            modalPrice.textContent =
-                property.price;
-
-
-            modal.classList.add(
-                "active"
-            );
-
-            document.body.classList.add(
-                "modal-open"
-            );
-
-
-            modalClose.focus();
-
-        };
-
-
-    const closePropertyModal =
-        () => {
-
-            modal.classList.remove(
-                "active"
-            );
-
-            document.body.classList.remove(
-                "modal-open"
-            );
-
-        };
-
-
-    document
-        .querySelectorAll(".view-property")
-        .forEach(button => {
-
-            button.addEventListener(
-                "click",
-                event => {
-
-                    event.stopPropagation();
-
-                    const card =
-                        button.closest(
-                            ".property-card"
-                        );
-
-
-                    openPropertyModal(
-                        card.dataset.property
-                    );
-
-                }
-            );
-
-        });
-
-
-    propertyCards.forEach(card => {
-
-        card.addEventListener(
-            "click",
-            event => {
-
-                if (
-                    event.target.closest(
-                        ".favorite-btn"
-                    )
-                ) {
-                    return;
-                }
-
-
-                openPropertyModal(
-                    card.dataset.property
-                );
-
-            }
-        );
-
-    });
-
-
-    modalClose.addEventListener(
-        "click",
-        closePropertyModal
-    );
-
-
-    modalBackdrop.addEventListener(
-        "click",
-        closePropertyModal
-    );
-
-
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key === "Escape" &&
-                modal.classList.contains(
-                    "active"
-                )
-            ) {
-
-                closePropertyModal();
-
-            }
-
-        }
-    );
-
-
-    /* =====================================================
-       EFEITO MAGNÉTICO DOS BOTÕES
-    ====================================================== */
-
-    const magneticButtons =
-        document.querySelectorAll(
-            ".magnetic"
-        );
-
-
-    magneticButtons.forEach(button => {
-
-        button.addEventListener(
-            "mousemove",
-            event => {
-
-                const rect =
-                    button.getBoundingClientRect();
-
-
-                const x =
-                    event.clientX -
-                    rect.left -
-                    rect.width / 2;
-
-
-                const y =
-                    event.clientY -
-                    rect.top -
-                    rect.height / 2;
-
-
-                button.style.transform =
-                    `translate(${x * .12}px, ${y * .12}px)`;
-
-            }
-        );
-
-
-        button.addEventListener(
-            "mouseleave",
-            () => {
-
-                button.style.transform =
-                    "";
-
-            }
-        );
-
-    });
-
-
-    /* =====================================================
-       PARALLAX DA IMAGEM HERO
-    ====================================================== */
-
-    const heroImage =
-        document.querySelector(
-            ".hero-img"
-        );
-
-
-    window.addEventListener(
-        "scroll",
-        () => {
-
-            if (
-                window.innerWidth <= 850
-            ) {
-                return;
-            }
-
-
-            const scroll =
-                window.scrollY;
-
-
-            if (scroll < window.innerHeight) {
-
-                heroImage.style.transform =
-                    `translateY(${scroll * .08}px) scale(1.02)`;
-
-            }
-
-        },
-        {
-            passive: true
-        }
-    );
-
-
-    /* =====================================================
-       EFEITO 3D NOS CARDS
-    ====================================================== */
-
-    const cards3D =
-        document.querySelectorAll(
-            ".property-card, .feature-card"
-        );
-
-
-    cards3D.forEach(card => {
-
-        card.addEventListener(
-            "mousemove",
-            event => {
-
-                if (
-                    window.innerWidth < 900
-                ) {
-                    return;
-                }
-
-
-                const rect =
-                    card.getBoundingClientRect();
-
-
-                const x =
-                    event.clientX -
-                    rect.left;
-
-
-                const y =
-                    event.clientY -
-                    rect.top;
-
-
-                const centerX =
-                    rect.width / 2;
-
-
-                const centerY =
-                    rect.height / 2;
-
-
-                const rotateX =
-                    (y - centerY) /
-                    30;
-
-
-                const rotateY =
-                    (centerX - x) /
-                    30;
-
-
-                card.style.transform =
-                    `
-                    translateY(-8px)
-                    perspective(900px)
-                    rotateX(${rotateX}deg)
-                    rotateY(${rotateY}deg)
-                    `;
-
-            }
-        );
-
-
-        card.addEventListener(
-            "mouseleave",
-            () => {
-
-                card.style.transform =
-                    "";
-
-            }
-        );
-
-    });
-
-
-    /* =====================================================
-       SMOOTH SCROLL PERSONALIZADO
-    ====================================================== */
-
-    document
-        .querySelectorAll(
-            'a[href^="#"]'
-        )
-        .forEach(anchor => {
-
-            anchor.addEventListener(
-                "click",
-                event => {
-
-                    const targetId =
-                        anchor.getAttribute(
-                            "href"
-                        );
-
-
-                    if (
-                        targetId === "#"
-                    ) {
-                        return;
-                    }
-
-
-                    const target =
-                        document.querySelector(
-                            targetId
-                        );
-
-
-                    if (!target)
-                        return;
-
-
-                    event.preventDefault();
-
-
-                    const headerHeight =
-                        header.offsetHeight;
-
-
-                    const targetPosition =
-                        target.getBoundingClientRect()
-                            .top +
-                        window.scrollY -
-                        headerHeight;
-
-
-                    window.scrollTo({
-
-                        top:
-                            targetPosition,
-
-                        behavior:
-                            "smooth"
-
-                    });
-
-                }
-            );
-
-        });
-
-
-    /* =====================================================
-       CURSOR GLOW DESKTOP
-    ====================================================== */
+    header?.classList.toggle("scrolled", scroll > 40);
 
     if (
-        window.matchMedia(
-            "(pointer:fine)"
-        ).matches
+      heroImage &&
+      window.innerWidth > 850 &&
+      !prefersReduced &&
+      scroll < window.innerHeight
     ) {
 
-        const cursorGlow =
-            document.createElement(
-                "div"
-            );
-
-
-        cursorGlow.className =
-            "cursor-glow";
-
-
-        document.body.appendChild(
-            cursorGlow
-        );
-
-
-        const cursorStyle =
-            document.createElement(
-                "style"
-            );
-
-
-        cursorStyle.textContent = `
-
-            .cursor-glow {
-
-                position: fixed;
-
-                width: 180px;
-                height: 180px;
-
-                border-radius: 50%;
-
-                pointer-events: none;
-
-                z-index: 1;
-
-                transform:
-                    translate(-50%, -50%);
-
-                transition:
-                    left .15s ease-out,
-                    top .15s ease-out;
-
-            }
-
-        `;
-
-
-        document.head.appendChild(
-            cursorStyle
-        );
-
-
-        window.addEventListener(
-            "mousemove",
-            event => {
-
-                cursorGlow.style.left =
-                    `${event.clientX}px`;
-
-                cursorGlow.style.top =
-                    `${event.clientY}px`;
-
-            }
-        );
+      heroImage.style.transform =
+        `translateY(${scroll * .08}px) scale(1.02)`;
 
     }
 
+    ticking = false;
+  }
+
+  window.addEventListener("scroll", () => {
+
+    if (!ticking) {
+
+      requestAnimationFrame(updateScrollEffects);
+      ticking = true;
+
+    }
+
+  }, { passive:true });
+
+  updateScrollEffects();
+
+
+  /* =======================================================
+     3. MENU MOBILE
+  ======================================================= */
+
+  function closeMenu() {
+
+    menuToggle?.classList.remove("active");
+    navbar?.classList.remove("open");
+
+    menuToggle?.setAttribute(
+      "aria-expanded",
+      "false"
+    );
+
+  }
+
+  menuToggle?.addEventListener("click", () => {
+
+    const opened =
+      menuToggle.classList.toggle("active");
+
+    navbar?.classList.toggle("open", opened);
+
+    menuToggle.setAttribute(
+      "aria-expanded",
+      opened
+    );
+
+  });
+
+  navLinks.forEach(link =>
+    link.addEventListener("click", closeMenu)
+  );
+
+
+  /* =======================================================
+     4. NAVEGAÇÃO ATIVA
+  ======================================================= */
+
+  const sectionObserver = new IntersectionObserver(entries => {
+
+    entries.forEach(entry => {
+
+      if (!entry.isIntersecting) return;
+
+      const id = entry.target.id;
+
+      navLinks.forEach(link => {
+
+        link.classList.toggle(
+          "active",
+          link.getAttribute("href") === `#${id}`
+        );
+
+      });
+
+    });
+
+  }, {
+    rootMargin:"-30% 0px -60% 0px"
+  });
+
+  sections.forEach(section => {
+
+    if (section.id)
+      sectionObserver.observe(section);
+
+  });
+
+
+  /* =======================================================
+     5. REVEAL ON SCROLL
+  ======================================================= */
+
+  if (!prefersReduced) {
+
+    const revealObserver = new IntersectionObserver(entries => {
+
+      entries.forEach(entry => {
+
+        if (!entry.isIntersecting) return;
+
+        entry.target.classList.add("visible");
+        revealObserver.unobserve(entry.target);
+
+      });
+
+    }, { threshold:.12 });
+
+    revealElements.forEach(el =>
+      revealObserver.observe(el)
+    );
+
+  } else {
+
+    revealElements.forEach(el =>
+      el.classList.add("visible")
+    );
+
+  }
+
+
+  /* =======================================================
+     6. CONTADORES
+  ======================================================= */
+
+  function animateCounter(element) {
+
+    const target = Number(element.dataset.counter);
+
+    if (prefersReduced) {
+
+      element.textContent =
+        target.toLocaleString("pt-BR") + "+";
+
+      return;
+    }
+
+    const start = performance.now();
+    const duration = 1500;
+
+    function update(now) {
+
+      const progress =
+        Math.min((now - start) / duration, 1);
+
+      const ease =
+        1 - Math.pow(1 - progress, 3);
+
+      element.textContent =
+        Math.floor(target * ease)
+          .toLocaleString("pt-BR");
+
+      if (progress < 1) {
+
+        requestAnimationFrame(update);
+
+      } else {
+
+        element.textContent =
+          target.toLocaleString("pt-BR") + "+";
+
+      }
+
+    }
+
+    requestAnimationFrame(update);
+
+  }
+
+  const counterObserver = new IntersectionObserver(entries => {
+
+    entries.forEach(entry => {
+
+      if (!entry.isIntersecting) return;
+
+      animateCounter(entry.target);
+      counterObserver.unobserve(entry.target);
+
+    });
+
+  }, { threshold:.7 });
+
+  counters.forEach(counter =>
+    counterObserver.observe(counter)
+  );
+
+
+  /* =======================================================
+     7. FILTRO DE IMÓVEIS
+     Delegação = apenas um listener.
+  ======================================================= */
+
+  document.addEventListener("click", event => {
+
+    const button =
+      event.target.closest(".filter-btn");
+
+    if (!button) return;
+
+    const filter = button.dataset.filter;
+
+    $$(".filter-btn").forEach(btn =>
+      btn.classList.toggle("active", btn === button)
+    );
+
+    propertyCards.forEach(card => {
+
+      const categories =
+        (card.dataset.category || "")
+          .split(" ");
+
+      const visible =
+        filter === "all" ||
+        categories.includes(filter);
+
+      card.classList.toggle("hidden", !visible);
+
+      if (visible && !prefersReduced) {
+
+        card.animate([
+          { opacity:0, transform:"translateY(10px)" },
+          { opacity:1, transform:"translateY(0)" }
+        ], {
+          duration:250,
+          easing:"ease-out"
+        });
+
+      }
+
+    });
+
+  });
+
+
+  /* =======================================================
+     8. FAVORITOS
+     Mantém comportamento original.
+  ======================================================= */
+
+  document.addEventListener("click", event => {
+
+    const favorite =
+      event.target.closest(".favorite-btn");
+
+    if (!favorite) return;
+
+    event.stopPropagation();
+
+    favorite.classList.toggle("active");
+
+    const icon = favorite.querySelector("i");
+
+    if (!icon) return;
+
+    const active =
+      favorite.classList.contains("active");
+
+    icon.classList.toggle("fa-solid", active);
+    icon.classList.toggle("fa-regular", !active);
+
+  });
+
+
+  /* =======================================================
+     9. MODAL DE IMÓVEIS
+     Altere somente os dados abaixo para adicionar imóveis.
+  ======================================================= */
+
+  const propertyData = {
+
+    "casa-moderna":{
+      image:"casa1.0.png",
+      title:"Casa Moderna Premium",
+      type:"Casa Premium",
+      location:"Região central",
+      bedrooms:"3",
+      bathrooms:"3",
+      parking:"2",
+      price:"R$ 2,5 mi"
+    },
+
+    "apartamento-urbano":{
+      image:"casa2.png",
+      title:"Apartamento Urban",
+      type:"Apartamento",
+      location:"Bairro planejado",
+      bedrooms:"2",
+      bathrooms:"2",
+      parking:"1",
+      price:"R$ 1,5 mi"
+    },
+
+    "casa-contemporanea":{
+      image:"casa3.png",
+      title:"Casa Contemporânea",
+      type:"Casa Contemporânea",
+      location:"Região residencial",
+      bedrooms:"4",
+      bathrooms:"4",
+      parking:"3",
+      price:"R$ 1,2 milhão"
+    }
+
+  };
+
+
+  /* Elementos do modal */
+
+  const modalImage = $("#modalImage");
+  const modalTitle = $("#modalTitle");
+  const modalType = $("#modalType");
+  const modalLocation = $("#modalLocation");
+  const modalBedrooms = $("#modalBedrooms");
+  const modalBathrooms = $("#modalBathrooms");
+  const modalParking = $("#modalParking");
+  const modalPrice = $("#modalPrice");
+
+
+  let lastFocused = null;
+
+  function openPropertyModal(id, trigger = null) {
+
+    const property = propertyData[id];
+
+    if (!property || !modal) return;
+
+    lastFocused = trigger;
+
+    if (modalImage) {
+      modalImage.src = property.image;
+      modalImage.alt = property.title;
+    }
+
+    if (modalTitle)
+      modalTitle.textContent = property.title;
+
+    if (modalType)
+      modalType.textContent = property.type;
+
+    if (modalLocation)
+      modalLocation.textContent = property.location;
+
+    if (modalBedrooms)
+      modalBedrooms.textContent = property.bedrooms;
+
+    if (modalBathrooms)
+      modalBathrooms.textContent = property.bathrooms;
+
+    if (modalParking)
+      modalParking.textContent = property.parking;
+
+    if (modalPrice)
+      modalPrice.textContent = property.price;
+
+    modal.classList.add("active");
+    document.body.classList.add("modal-open");
+
+    modalClose?.focus();
+
+  }
+
+  function closePropertyModal() {
+
+    modal?.classList.remove("active");
+    document.body.classList.remove("modal-open");
+
+    lastFocused?.focus();
+    lastFocused = null;
+
+  }
+
+
+  /* Clique no card ou botão */
+
+  document.addEventListener("click", event => {
+
+    const card =
+      event.target.closest(".property-card");
+
+    if (!card) return;
+
+    if (event.target.closest(".favorite-btn"))
+      return;
+
+    const viewButton =
+      event.target.closest(".view-property");
+
+    openPropertyModal(
+      card.dataset.property,
+      viewButton || card
+    );
+
+  });
+
+
+  modalClose?.addEventListener(
+    "click",
+    closePropertyModal
+  );
+
+  modalBackdrop?.addEventListener(
+    "click",
+    closePropertyModal
+  );
+
+  document.addEventListener("keydown", event => {
+
+    if (
+      event.key === "Escape" &&
+      modal?.classList.contains("active")
+    ) {
+
+      closePropertyModal();
+
+    }
+
+  });
+
+
+  /* =======================================================
+     10. SMOOTH SCROLL
+  ======================================================= */
+
+  $$('a[href^="#"]').forEach(anchor => {
+
+    anchor.addEventListener("click", event => {
+
+      const id = anchor.getAttribute("href");
+
+      if (!id || id === "#") return;
+
+      const target = $(id);
+
+      if (!target) return;
+
+      event.preventDefault();
+
+      const top =
+        target.getBoundingClientRect().top +
+        window.scrollY -
+        (header?.offsetHeight || 0);
+
+      window.scrollTo({
+        top,
+        behavior: prefersReduced ? "auto" : "smooth"
+      });
+
+    });
+
+  });
+
+
+  /* =======================================================
+     11. EFEITO MAGNÉTICO
+     Apenas desktop.
+  ======================================================= */
+
+  if (desktop && !prefersReduced) {
+
+    $$(".magnetic").forEach(button => {
+
+      button.addEventListener("mousemove", event => {
+
+        const rect =
+          button.getBoundingClientRect();
+
+        const x =
+          event.clientX -
+          rect.left -
+          rect.width / 2;
+
+        const y =
+          event.clientY -
+          rect.top -
+          rect.height / 2;
+
+        button.style.transform =
+          `translate(${x * .10}px,${y * .10}px)`;
+
+      });
+
+      button.addEventListener("mouseleave", () => {
+        button.style.transform = "";
+      });
+
+    });
+
 
     /* =====================================================
-       PREVENIR ERRO DE IMAGEM
-    ====================================================== */
+       12. EFEITO 3D NOS CARDS
+    ===================================================== */
 
-    document
-        .querySelectorAll("img")
-        .forEach(img => {
+    $$(".property-card, .feature-card")
+      .forEach(card => {
 
-            img.addEventListener(
-                "error",
-                () => {
+        card.addEventListener("mousemove", event => {
 
-                }
-            );
+          if (window.innerWidth < 900) return;
+
+          const rect =
+            card.getBoundingClientRect();
+
+          const x =
+            event.clientX -
+            rect.left -
+            rect.width / 2;
+
+          const y =
+            event.clientY -
+            rect.top -
+            rect.height / 2;
+
+          const rotateX = -y / 28;
+          const rotateY = x / 28;
+
+          card.style.transform =
+            `translateY(-8px)
+             perspective(900px)
+             rotateX(${rotateX}deg)
+             rotateY(${rotateY}deg)`;
 
         });
+
+        card.addEventListener("mouseleave", () => {
+          card.style.transform = "";
+        });
+
+      });
+
+
+    /* =====================================================
+       13. CURSOR GLOW
+    ===================================================== */
+
+    const glow =
+      document.createElement("div");
+
+    glow.className = "cursor-glow";
+
+    document.body.appendChild(glow);
+
+    let glowTick = false;
+    let mouseX = 0;
+    let mouseY = 0;
+
+    window.addEventListener("mousemove", event => {
+
+      mouseX = event.clientX;
+      mouseY = event.clientY;
+
+      if (glowTick) return;
+
+      requestAnimationFrame(() => {
+
+        glow.style.left = mouseX + "px";
+        glow.style.top = mouseY + "px";
+
+        glowTick = false;
+
+      });
+
+      glowTick = true;
+
+    });
+
+  }
 
 });
