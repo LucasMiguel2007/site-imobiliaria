@@ -2705,3 +2705,21 @@ a {
     font-size: 0.8rem;
   }
 }
+
+@media (max-width: 768px) {
+  .property-card {
+    cursor: pointer;
+  }
+
+  .property-overlay {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+
+  .view-property {
+    pointer-events: auto;
+    position: relative;
+    z-index: 5;
+  }
+}

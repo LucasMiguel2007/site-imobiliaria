@@ -368,14 +368,14 @@ document.addEventListener("DOMContentLoaded", () => {
     price:"R$ 2,5 mi"
   },
 
-  "casa-urbana":{
-    image:"casa2.png",
-    title:"Casa Urbana",
-    location:"Bairro planejado",
-    bedrooms:"2",
-    bathrooms:"2",
-    parking:"1",
-    price:"R$ 1,5 mi"
+  "casa-urbana": {
+    image: "casa2.png",
+    title: "Casa Urbana",
+    location: "Bairro planejado",
+    bedrooms: "2",
+    bathrooms: "2",
+    parking: "1",
+    price: "R$ 1,5 mi"
   },
 
   "casa-contemporanea":{
@@ -456,27 +456,28 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
 
-  /* Clique no card ou botão */
+/* =======================================================
+   ABERTURA DOS IMÓVEIS — DESKTOP + MOBILE
+======================================================= */
 
-  document.addEventListener("click", event => {
+document.addEventListener("click", event => {
+  const favorite = event.target.closest(".favorite-btn");
+  if (favorite) return;
 
-    const card =
-      event.target.closest(".property-card");
+  const button = event.target.closest(".view-property");
+  const card = event.target.closest(".property-card");
 
-    if (!card) return;
+  if (!card) return;
 
-    if (event.target.closest(".favorite-btn"))
-      return;
+  const propertyId = card.dataset.property;
 
-    const viewButton =
-      event.target.closest(".view-property");
+  if (!propertyId || !propertyData[propertyId]) {
+    console.warn("Imóvel não encontrado:", propertyId);
+    return;
+  }
 
-    openPropertyModal(
-      card.dataset.property,
-      viewButton || card
-    );
-
-  });
+  openPropertyModal(propertyId, button || card);
+});
 
 
   modalClose?.addEventListener(
