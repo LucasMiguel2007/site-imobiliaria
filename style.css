@@ -2667,3 +2667,41 @@ a {
     transition: none;
   }
 }
+
+/* =========================================
+   FILTROS — RESPONSIVIDADE MOBILE
+========================================= */
+
+.property-filters {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+@media (max-width: 600px) {
+  .property-filters {
+    width: 100%;
+    padding: 0 16px;
+    justify-content: center;
+    gap: 8px;
+  }
+
+  .filter-btn {
+    flex: 0 0 auto;
+    white-space: nowrap;
+  }
+}
+
+@media (max-width: 400px) {
+  .property-filters {
+    gap: 7px;
+    padding: 0 12px;
+  }
+
+  .filter-btn {
+    padding: 9px 14px;
+    font-size: 0.8rem;
+  }
+}
