@@ -460,24 +460,21 @@ document.addEventListener("DOMContentLoaded", () => {
    ABERTURA DOS IMÓVEIS — DESKTOP + MOBILE
 ======================================================= */
 
-document.addEventListener("click", event => {
-  const favorite = event.target.closest(".favorite-btn");
-  if (favorite) return;
+  document.addEventListener("click", event => {
+    const card = event.target.closest("#imoveis .property-card");
 
-  const button = event.target.closest(".view-property");
-  const card = event.target.closest(".property-card");
+    if (!card) return;
+    if (event.target.closest(".favorite-btn")) return;
 
-  if (!card) return;
+    const id = card.dataset.property;
 
-  const propertyId = card.dataset.property;
+    if (!propertyData[id]) {
+      console.error(`Imóvel "${id}" não existe no propertyData.`);
+      return;
+    }
 
-  if (!propertyId || !propertyData[propertyId]) {
-    console.warn("Imóvel não encontrado:", propertyId);
-    return;
-  }
-
-  openPropertyModal(propertyId, button || card);
-});
+    openPropertyModal(id, card);
+  });
 
 
   modalClose?.addEventListener(
